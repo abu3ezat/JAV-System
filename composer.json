@@ -5,7 +5,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.2",
+        "php": "^7.0",
         "fideloper/proxy": "^4.0",
         "doctrine/dbal": "^2.9",
         "intervention/image": "^2.4",
