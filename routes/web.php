@@ -52,3 +52,8 @@ Route::get('noti', [\App\Http\Controllers\PendingController::class , 'notify']);
 
 Route::post('/test' , 'TestController@store')->name('test.store');
 Route::delete('/test' , 'TestController@destroy')->name('test.destroy');
+
+Route::post('search' , [\App\Http\Controllers\RecordController::class , 'search']);
+
+
+Route::post('getFilterData',[\App\Http\Controllers\RecordController::class , 'getFilterData']);

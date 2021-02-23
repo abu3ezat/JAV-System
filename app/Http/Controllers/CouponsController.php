@@ -52,6 +52,8 @@ class CouponsController extends Controller
     }
 
     public function delete($id){
+        $copon = Coupon::findOrFail($id);
+        $copon->delete();
         DB::delete('delete from coupons  where id = ?',[$id]);
         return redirect('couponshow')->with('message', 'Coupon was Deleted');
     }

@@ -53,5 +53,33 @@ class RecordController extends Controller
     }
 
 
+//    public function search(Request $req){
+//       $fromDate = $req->input('fromDate');
+//       $toDate = $req->input('toDate');
+//
+//       $query = DB::table('records')->select()->where('date' , '>=' , $fromDate)->where('date' , '<=' , $toDate)->get();
+//       dd($query);
+//
+//    }
+
+    public function getFilterData(Request $request){
+
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
+
+        $dist = $request->input('filter_dist');
+        if (!empty($dist)){
+
+            $records = Record::whereBetween('date', [$from_date, $to_date])->where('destination' , $dist)->get();
+        }else{
+            $records = Record::whereBetween('date', [$from_date, $to_date])->get();
+        }
+
+
+
+        return response()->json(['status' => 200 ,'records' => $records]);
+
+    }
+
 
 }

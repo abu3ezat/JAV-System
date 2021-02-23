@@ -36,18 +36,51 @@
         <div class="card-header">
             {{ trans('cruds.role.title_singular') }} {{ trans('global.list') }}
         </div>
+        <form method="POST" id="frm_filter">
+            @csrf
+            <br>
+            <div class="container">
+                <div class="row">
+                    <div class="container-fluid">
+                        <div class="form-group row input-daterange">
+                            <lable for="date" class="col-form-label"> From Date</lable>
+                            <div class="col-sm-2">
+                                <input type="date" class="form-control input-sm" id="from_date" name="from_date" required>
+                            </div>
+                            <lable for="date" class="col-form-label"> To Date</lable>
+                            <div class="col-sm-2">
+                                <input type="date" class="form-control input-sm" id="to_date" name="to_date" required>
+                            </div>
+                            <label for="permission">Destination</label>
+                            <div class="col-sm-2">
+                                <select name='filter_dist' class="form-control select2">
+                                    <option selected="selected"></option>
+                                    <option value="Cairo"> Cairo </option>
+                                    <option value="Sharjah"> Sharjah </option>
+                                    <option value="Aqaba"> Aqaba </option>
+                                    <option value="Kuwait"> Kuwait </option>
+                                    <option value="Cairo"> Baghdad </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2 text-center center">
+                                <button type="submit" class="btn btn-success btn-filter"> Filter</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
 
         <div class="card-body text-center">
             <div class="table-responsive">
-                <table class=" table table-bordered table-striped table-hover datatable datatable-Role">
+                <table id="table_records" class=" table table-bordered table-striped table-hover datatable datatable-Role">
                     <thead>
                     <tr>
                         <th width="10">
 
                         </th>
-                        <th>
-                            ID
-                        </th>
+
                         <th>
                             Name
                         </th>
@@ -85,9 +118,7 @@
                             <td>
 
                             </td>
-                            <td>
-                                {{ $record->id ?? '' }}
-                            </td>
+
                             <td>
                                 {{ $record->name ?? '' }}
                             </td>
@@ -135,6 +166,7 @@
                     @endforeach
                     </tbody>
                 </table>
+                {{ csrf_field() }}
             </div>
 
 
@@ -206,6 +238,56 @@
                     .columns.adjust();
             });
         })
+
+        $('#frm_filter').on('submit',function (e) {
+
+            var formContent = $(this).serialize();
+            console.log(formContent);
+            var url = $('meta[name=base_url]').attr('content');
+
+            $.ajax({
+
+                url:url+'/getFilterData',
+                method:"POST",
+                data:formContent,
+
+                success:function (response) {
+                    if(response.status == 200){
+                        $('#table_records tbody').empty();
+
+                        $.each(response.records, function (i,item) {
+
+                            $('#table_records tbody').append('<tr>');
+                            $('#table_records tbody').append('<td>'+response.records[i].name+'</td>');
+                            $('#table_records tbody').append('<td>'+response.records[i].pnr+'</td>');
+                            $('#table_records tbody').append('<td>'+response.records[i].destination+'</td>');
+                            $('#table_records tbody').append('<td>'+response.records[i].date+'</td>');
+                            $('#table_records tbody').append('<td>'+response.records[i].discount+'</td>');
+                            $('#table_records tbody').append( '<td>'+response.records[i].total+'</td>');
+                            $('#table_records tbody').append('<td>'+response.records[i].notes+'</td>');
+                            $('#table_records tbody').append('<td>'+ '<form method="post" action="couponsubmit/'+response.records[i].id+'">' +
+                                '<label for="">Enter Coupon</label>'+ '<input type="text" name="coupon_code" id="coupon_code">' + '<div class="modal-footer">'+ '<button type="submit" class="btn btn-primary">'+'Apply'+'</button>'+ '</div>'
+                                + '</form>' + '</td>');
+                            $('#table_records tbody').append('<td>'+'<a class="btn btn-secondary" style="background-color: #f86c6b;" href="recorddelete/'+response.records[i].id+'" >'+'Delete'+'</a>'+ '</td>')
+
+                            $('#table_records tbody').append('</tr>');
+
+                        });
+                    }
+                },
+
+                error:function (xhr) {
+                    console.log(xhr.responseText);
+                }
+
+            });
+
+            return false;
+            e.preventDefault();
+        })
+
+
+
 
     </script>
 @endsection
